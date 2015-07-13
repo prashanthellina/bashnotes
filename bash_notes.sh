@@ -1,6 +1,6 @@
 # Copyright (c) 2009, Prashanth Ellina
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #     * Redistributions of source code must retain the above copyright
@@ -11,7 +11,7 @@
 #     * Neither the name of the <organization> nor the
 #       names of its contributors may be used to endorse or promote products
 #       derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY Prashanth Ellina ''AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -29,15 +29,12 @@
 HISTIGNORE="$HISTIGNORE:notedown *:"
 
 NOTES="$HOME/Notes"
-JOURNAL="$NOTES/personal"
-JOURNAL_WIKI="personal"
+JOURNAL="$NOTES/diary"
 MODE="read"
 VIM="vim"
 
-# note [<wiki>] [<note-name>]
-# eg: note personal Todo
-#     note personal
-#     note work Testing
+# note [<note-name>]
+# eg: note Todo
 #     note
 note()
 {
@@ -48,15 +45,7 @@ note()
         return 0
     fi
 
-    # if only wiki is specified
-    # and not the note name, then
-    # open the index page of that wiki
-    if [ $# -eq 1 ]; then
-        $VIM "$NOTES/$1/index.note"
-        return 0
-    fi
-
-    NOTE="$NOTES/$1/$2.note"
+    NOTE="$NOTES/$1.md"
 
     # does note already exist?
     exists=1
@@ -64,47 +53,36 @@ note()
         exists=0
     fi
 
-    # In "insert" mode, the vim
-    # editor open with cursor
-    # at the last line and ready
-    # for editing. In "read" mode,
-    # cursor is at the start of the
-    # document.
-    vim_options=""
-    if [ "$MODE" == "insert" ]; then
-        vim_options="+ -c start"
-        echo "" >> "$NOTE"
-    fi
-
     # open the note
-    $VIM $vim_options "$NOTE"
+    if [ $exists -eq 0 ]; then
+        $VIM -c start -c "VimwikiIndex" -c "VimwikiGoto $1"
+    else
+        $VIM -c "VimwikiIndex" -c "VimwikiGoto $1"
+    fi
 
     # If the note which was just edited
     # now is a new one, add a link to the
     # index page of this wiki
-    if [ $exists -eq 0 ]; then
-        if [ -f "$NOTE" ]; then
-            echo "    * $2" >> "$NOTES/$1/index.note"
-        fi
+    if [ -e "$NOTE" ] && [ $exists -eq 0]; then
+        echo "* $1" >> "$NOTES/index.md"
     fi
 }
 
 _get_today_fname()
 {
     dt=`date +%F`
-    fname="$JOURNAL/$dt.note"
+    fname="diary/$dt.md"
     echo "$fname"
 }
 
 _init_today_file()
 {
     dt=`date +%F`
-    fname="$1"
+    fname="$NOTES/$1"
     longdt=`date +"%A, %e %B %Y"`
 
     if [ ! -e "$fname" ]; then
-        echo "= $longdt =" >> $fname
-        echo "    * [[$dt]]" >> "$JOURNAL/Journal.note"
+        echo "# $longdt" >> $fname
     fi
 }
 
@@ -112,9 +90,19 @@ _init_today_file()
 # Opens a note from the journal corresponding to today
 today() {
     _init_today_file "$(_get_today_fname)"
-    MODE="insert"
-    note $JOURNAL_WIKI `date +%F`
-    MODE="read"
+    vim -c start -c VimwikiMakeDiaryNote
+}
+
+# notes
+# Opens the wiki index
+notes() {
+    vim -c VimwikiIndex
+}
+
+# journal
+# Opens the journal index
+journal() {
+    vim -c VimwikiDiaryIndex
 }
 
 # notedown [<note text>]
@@ -122,7 +110,7 @@ today() {
 # If "note text" is not provided then behave the same
 # as "today" command.
 notedown() {
-  
+
     fname="$(_get_today_fname)"
 
     if [ ! -e "$fname" ]; then
@@ -133,7 +121,7 @@ notedown() {
 
     # enter timestamp in the note
     echo >> "$fname"
-    echo "[$cur_time]" >> "$fname"
+    echo "**[$cur_time]**" >> "$fname"
 
     if [ $# -eq 0 ]; then
         MODE="insert"
@@ -146,21 +134,17 @@ notedown() {
 
 }
 
-# findnote <wiki> [<term>]
+# findnote [<term>]
 # Search notes in wiki for the term specified.
 findnote() {
-    if [ $# -ne 2 ]; then
-        printf "Usage: note <wiki> <term>\n"
+    if [ $# -ne 1 ]; then
+        printf "Usage: note <term>\n"
         return 0
     fi
 
-    NOTE_DIR="$HOME/Notes/$1"
-
-    grep -R -i -C1 --color=always $2 $NOTE_DIR | sed "s:$NOTE_DIR/::" | sed "s:\.note::"
+    grep -R -i -C1 --color=always $1 $NOTES | sed "s:$NOTES/::" | sed "s:\.md::"
 }
 
-alias note:='note'
-alias notes='$VIM $NOTES/'
 alias findnote='findnote'
 
 _notes() {
@@ -169,16 +153,12 @@ _notes() {
     cur="${COMP_WORDS[COMP_CWORD]}"
 
     if [ $COMP_CWORD -eq 1 ]; then
-        names=`ls $HOME/Notes`
-    else
-        directory="${COMP_WORDS[1]}"
-        names=`ls $HOME/Notes/$directory | sed 's/.note$//g'`
+        names=`ls $NOTES | sed 's/.md$//g'`
     fi
-    
+
     IFS=$'\t\n'
     COMPREPLY=( $(compgen -W "${names}" -- ${cur}) )
     return 0
 }
 complete -o nospace -F _notes note
-complete -o nospace -F _notes note:
 complete -o nospace -F _notes findnote
