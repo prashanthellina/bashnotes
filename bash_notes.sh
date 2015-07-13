@@ -96,7 +96,9 @@ today() {
 # notes
 # Opens the wiki index
 notes() {
-    vim -c VimwikiIndex
+    # Specifying VimwikiIndex command twice as a hack
+    # to overcome issue in OSX
+    vim -c VimwikiIndex -c VimwikiIndex
 }
 
 # journal
