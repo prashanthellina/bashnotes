@@ -63,7 +63,7 @@ note()
     # If the note which was just edited
     # now is a new one, add a link to the
     # index page of this wiki
-    if [ -e "$NOTE" ] && [ $exists -eq 0]; then
+    if [ -e "$NOTE" ] && [ $exists -eq 0 ]; then
         echo "* $1" >> "$NOTES/index.md"
     fi
 }
