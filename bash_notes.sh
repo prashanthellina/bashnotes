@@ -59,13 +59,6 @@ note()
     else
         $VIM -c "VimwikiIndex" -c "VimwikiGoto $1"
     fi
-
-    # If the note which was just edited
-    # now is a new one, add a link to the
-    # index page of this wiki
-    if [ -e "$NOTE" ] && [ $exists -eq 0 ]; then
-        echo "* $1" >> "$NOTES/index.md"
-    fi
 }
 
 _get_today_fname()
@@ -155,7 +148,7 @@ _notes() {
     cur="${COMP_WORDS[COMP_CWORD]}"
 
     if [ $COMP_CWORD -eq 1 ]; then
-        names=`ls $NOTES | sed 's/.md$//g'`
+        names=`cd $NOTES && tree -f -P "*.md" | grep "md$" | grep -o "\..*.md" | cut -b3- | sed 's/.md$//g' && cd - &> /dev/null`
     fi
 
     IFS=$'\t\n'
