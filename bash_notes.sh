@@ -24,54 +24,26 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ###############################################################################
 
+# Ensure presence of directories
+mkdir -p "$NOTES_DIR"
+mkdir -p "$DIARY_DIR"
+
 # Make sure notedown commands are not stored in
-# bash history
-HISTIGNORE="$HISTIGNORE:notedown *:"
-
-NOTES="$HOME/Notes"
-JOURNAL="$NOTES/diary"
-MODE="read"
-VIM="vim"
-
-# note [<note-name>]
-# eg: note Todo
-#     note
-note()
-{
-    # open today note from journal
-    # if no options provided
-    if [ $# -eq 0 ]; then
-        today
-        return 0
-    fi
-
-    NOTE="$NOTES/$1.md"
-
-    # does note already exist?
-    exists=1
-    if [ ! -e "$NOTE" ]; then
-        exists=0
-    fi
-
-    # open the note
-    if [ $exists -eq 0 ]; then
-        $VIM -c start -c "VimwikiIndex" -c "VimwikiGoto $1"
-    else
-        $VIM -c "VimwikiIndex" -c "VimwikiGoto $1"
-    fi
-}
+# bash history. For zsh, prefix space to the command
+# to prevent it from being added to history
+HISTIGNORE="$HISTIGNORE:note *:"
 
 _get_today_fname()
 {
     dt=`date +%F`
-    fname="diary/$dt.md"
+    fname="$dt.md"
     echo "$fname"
 }
 
 _init_today_file()
 {
     dt=`date +%F`
-    fname="$NOTES/$1"
+    fname="$DIARY_DIR/$1"
     longdt=`date +"%A, %e %B %Y"`
 
     if [ ! -e "$fname" ]; then
@@ -80,31 +52,26 @@ _init_today_file()
 }
 
 # today
-# Opens a note from the journal corresponding to today
+# Opens a note from the diary corresponding to today
 today() {
-    _init_today_file "$(_get_today_fname)"
-    vim -c start -c VimwikiMakeDiaryNote
+    fname="$(_get_today_fname)"
+    _init_today_file "$fname"
+    vim -c start "$fname"
 }
 
-# notes
-# Opens the wiki index
 notes() {
-    # Specifying VimwikiIndex command twice as a hack
-    # to overcome issue in OSX
-    vim -c VimwikiIndex -c VimwikiIndex
+    vim "$NOTES_DIR"
 }
 
-# journal
-# Opens the journal index
-journal() {
-    vim -c VimwikiDiaryIndex
+diary() {
+    vim "$DIARY_DIR"
 }
 
-# notedown [<note text>]
+# note [<note text>]
 # Store the "note text" in today's journal entry note.
 # If "note text" is not provided then behave the same
 # as "today" command.
-notedown() {
+note() {
 
     fname="$(_get_today_fname)"
 
@@ -137,23 +104,9 @@ findnote() {
         return 0
     fi
 
-    grep -R -i -C1 --color=always $1 $NOTES | sed "s:$NOTES/::" | sed "s:\.md::"
+    echo "=> Note name matches"
+    tree $NOTES_DIR | ag -i --color "$1"
+    echo
+    echo "=> Note content matches"
+    ag -i -C2 --color --group "$1" $NOTES_DIR
 }
-
-alias findnote='findnote'
-
-_notes() {
-    local cur names IFS
-
-    cur="${COMP_WORDS[COMP_CWORD]}"
-
-    if [ $COMP_CWORD -eq 1 ]; then
-        names=`cd $NOTES && tree -f -P "*.md" | grep "md$" | grep -o "\..*.md" | cut -b3- | sed 's/.md$//g' && cd - &> /dev/null`
-    fi
-
-    IFS=$'\t\n'
-    COMPREPLY=( $(compgen -W "${names}" -- ${cur}) )
-    return 0
-}
-complete -o nospace -F _notes note
-complete -o nospace -F _notes findnote
