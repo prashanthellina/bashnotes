@@ -6,7 +6,7 @@ The goal is extreme simplicity and the feeling of "close-to-metal-ness".
 ## Why?
 
 I tried various note taking mechanisms (Evernote, Tomboy, Google Docs) and
-found that not one solved all the of my needs.
+found that not one solved all of my needs.
 
 A note taking application of my preference would have to support the following
 aspects.
@@ -14,7 +14,7 @@ aspects.
 - Fast - Evernote/Google Docs were slow
 - Synchronized - so I can access from different computers
 - Interlinked - so I could have a wiki style system and navigate within
-- Diary - Allow me quickly jot down thoughts (twitter style short messages)
+- Diary - Allow me to quickly jot down thoughts (twitter style short messages)
 - Blog - maintain a blog with the same infrastructure
 
 I work on the command-line often and love the power it provides me (as compared
@@ -89,3 +89,66 @@ take effect.
 
 ## Usage
 
+After following the setup process, you have
+
+1. A server that acts as a notes backup location using a Git repo
+1. One or more local machines across which the notes are synchronized
+1. Empty `notes` and `diary` directories.
+
+Let us take this for a spin
+
+### Note down a thought in the diary
+
+```bash
+note "I'm trying out my awesome new note taking setup"
+```
+
+You would have noticed that nothing seemed to happen for the above command. Now
+do
+
+```bash
+today
+```
+
+Cool huh? Exit the file now.
+
+Add one more thought to the diary.
+
+```bash
+note "This is really cool :)"
+```
+
+This note is also added to the diary file. The command will create a new
+file for every day and record all diary notes of that day over there.
+
+### See all diary notes
+```bash
+diary
+```
+
+You will see just one entry but this will change as you use this everyday.
+
+### Create a wiki Note
+
+```bash
+vim ~/notes/ThoughtsOnMarkdown.md
+```
+
+Add some text to this (Learn [Markdown Syntax here](http://daringfireball.net/
+projects/markdown/syntax))
+
+Example text to add to above file
+
+```markdown
+# Thoughts on Markdown
+
+`Markdown` is a great plain text format that is highly readable and translates
+well to HTML with pretty formatting.
+
+See how this helps me maintain notes in [Bash notes](Bashnotes.md)
+```
+
+Move the Vim cursor to the link and press ENTER.
+
+Aha! You can now add content to the new file and move back to the previous one
+by pressing BACKSPACE in normal mode.
