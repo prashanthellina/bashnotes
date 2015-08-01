@@ -67,6 +67,14 @@ lorem ipsum [ThoughtsOnMarkdown](ThoughtsOnMarkdown.md) dolor ...
 
 ### Shell commands
 
+First, some dependencies
+
+```bash
+sudo apt-get install ag
+sudo apt-get install tree
+```
+(On OSX, use Homebrew or something similar for installing the above)
+
 Assuming you have placed your Notes directory at `~/notes`, let us follow this
 process.
 
