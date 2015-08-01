@@ -50,15 +50,16 @@ setup automatic synchronization across machine just like Dropbox.
 
 Recent versions of Vim have good built-in support for Markdown files including
 Syntax highlighting and code folding. If you have an older version, you can get
-the same level of support by installing [vim-markdown](https://github.com/tpope/
-vim-markdown).
+the same level of support by installing
+[vim-markdown](https://github.com/tpope/vim-markdown).
+
 
 #### Following inter-note markdown links
 
 Consider the note text below. The link refers to another note in Markdown format
 that is present in the same directory. By default, you cannot navigate to that
-note in Vim. To enable that behaviour, install [follow-markdown-links](https://
-github.com/prashanthellina/follow-markdown-links) Vim plugin.
+note in Vim. To enable that behaviour, install [follow-markdown-links](
+https://github.com/prashanthellina/follow-markdown-links) Vim plugin.
 
 ```markdown
 lorem ipsum [ThoughtsOnMarkdown](ThoughtsOnMarkdown.md) dolor ...
@@ -134,8 +135,8 @@ You will see just one entry but this will change as you use this everyday.
 vim ~/notes/ThoughtsOnMarkdown.md
 ```
 
-Add some text to this (Learn [Markdown Syntax here](http://daringfireball.net/
-projects/markdown/syntax))
+Add some text to this (Learn [Markdown Syntax here](
+http://daringfireball.net/projects/markdown/syntax))
 
 Example text to add to above file
 
