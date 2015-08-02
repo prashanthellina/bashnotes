@@ -161,3 +161,9 @@ Move the Vim cursor to the link and press ENTER.
 
 Aha! You can now add content to the new file and move back to the previous one
 by pressing BACKSPACE in normal mode.
+
+### Find notes
+
+```bash
+findnote markdown
+```
