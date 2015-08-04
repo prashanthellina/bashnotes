@@ -70,7 +70,7 @@ lorem ipsum [ThoughtsOnMarkdown](ThoughtsOnMarkdown.md) dolor ...
 First, some dependencies
 
 ```bash
-sudo apt-get install ag
+sudo apt-get install silversearcher-ag
 sudo apt-get install tree
 ```
 (On OSX, use Homebrew or something similar for installing the above)
